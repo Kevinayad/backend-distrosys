@@ -9,4 +9,4 @@ var appointmentSchema = new Schema({
     date: {type: Date}
 });
 
-module.exports = mongoose.model('appointment', appointmentSchema);
+module.exports = mongoose.model('appointments', appointmentSchema);
