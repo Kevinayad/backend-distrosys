@@ -1,4 +1,5 @@
 const validatorTopic = 'Validator';
 const bookingHandlerTopic = 'Booking';
 
-module.exports = allTopics;
+exports.validatorTopic = validatorTopic;
+exports.bookingHandlerTopic = bookingHandlerTopic;
