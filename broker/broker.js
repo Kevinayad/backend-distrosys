@@ -17,16 +17,22 @@ client.on("connect", function() {
     const handlerTopic = topics.bookingHandlerTopic;
     const GUITopic = topics.frontendTopic;
 
-    client.subscribe(valTopic);
-    console.log("Subscribed to: " + valTopic);
-    client.subscribe(handlerTopic);
-    console.log("Subscribed to: " + handlerTopic);
-    client.subscribe(GUITopic);
-    console.log("Subscribed to: " + GUITopic);
+    function subscribe(topic) {
+    client.subscribe(topic);
+    console.log("Subscribed to: " + topic);
+    }
 
-    client.publish(valTopic, 'Validate this: ...');
-    client.publish(handlerTopic, 'Handle this: ...');
-    client.publish(GUITopic, 'User request: ...');
+    function publish(topic, message) {
+    client.publish(topic, message);
+    }
+
+    subscribe(valTopic);
+    subscribe(handlerTopic);
+    subscribe(GUITopic);
+
+    publish(valTopic, 'Validate this: ...');
+    publish(handlerTopic, 'Handle this: ...');
+    publish(GUITopic, 'User request: ...');
 })
 
 client.on('message', function(topic, message) {
