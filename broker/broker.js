@@ -18,12 +18,12 @@ client.on("connect", function() {
     const GUITopic = topics.frontendTopic;
 
     function subscribe(topic) {
-    client.subscribe(topic);
-    console.log("Subscribed to: " + topic);
+        client.subscribe(topic);
+        console.log("Subscribed to: " + topic);
     }
 
     function publish(topic, message) {
-    client.publish(topic, message);
+        client.publish(topic, message);
     }
 
     subscribe(valTopic);
