@@ -1,4 +1,5 @@
-var mongoose = require('mongoose').mongoose;
+var mongoose = require('mongoose');
+var jsonFile = 'backend\Database\dentistRepo.json'
 
 const mongoURI = "mongodb+srv://team12user:team12developer@dit355team12cluster.bwr7a.mongodb.net/dentistimodb?retryWrites=true";
 
@@ -9,14 +10,15 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
         process.exit(1);
     }
     console.log(`Connected to MongoDB with URI: ${mongoURI}`);
+    parseJson(jsonFile);
 });
-mongoose.connect('dentistRepo.json', function (err, db) {
-    if (err) throw err;
-    var jsonData = db;
+function parseJson(jsonFile) {
+    //if (err) throw err;
+    var jsonData = jsonFile;
     var jsonParsed = JSON.parse(jsonData);
-    dbo.collection("dentists").insertOne(jsonParsed, function (err, res) {
+    mongoose.collection("dentists").insertOne(jsonParsed, function (err, res) {
         if (err) throw err;
         console.log("1 document inserted");
         db.close();
     });
-});
+};
