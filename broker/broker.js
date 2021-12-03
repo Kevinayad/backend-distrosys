@@ -52,5 +52,11 @@ client.on("connect", function() {
 })
 
 client.on('message', function(topic, message) {
+    /* TODO: work in progress (User story 3)
+    if (topic == topics.frontendTopic){
+        //call Booking handler, to create appointment before persisting it
+        //bookingRequest is either a String or a JSON, choice needs to be taken
+        publish(handlerTopic, message)
+    } */
     console.log(message.toString());
 })
