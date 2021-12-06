@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 const jsonFile = require("./dentistRepo.json");
+//const dentist = require('../models/Dentist.js');
 var moment = require('moment');
 
 const mongoURI = "mongodb+srv://team12user:team12developer@dit355team12cluster.bwr7a.mongodb.net/dentistimodb?retryWrites=true";
@@ -24,22 +25,39 @@ function parseJson(file) {
         var clinic = file['dentists'][i]
         clinics[i] = clinic;
         //console.log(clinics);
+        const data = JSON.parse(clinic);
+        console.log(data.name);
+        // const dentistry = {
+        //     id: clinic.id,
+        //     name: clinic.name,
+        //     owner: clinic.owner,
+        //     dentists: clinic.dentists,
+        //     address: clinic.address,
+        //     city: clinic.city,
+        //     coordinatelong: clinic.coordinate.longititude,
+        //     coordinatelat: clinic.coordinate.latitude,
+        //     opneinghours: clinic.openinghours
+        // } 
+        // new dentist(dentistry).save()
         slotGenerator(clinic.openinghours);
     }
 
-    //conn.collection("dentists").insert(jsonParsed, function (err, res) {
-    //    if (err) throw err;
-    //    console.log("1 document inserted");
-    //    db.close(); Maybe not used
-    //});
+    //  conn.collection("dentists").insert(parseJson(jsonFile), function (err, res) {
+    //     if (err) throw err;
+    //     console.log("1 document inserted");
+    //     db.close();
+    //  });
 };
 
 function slotGenerator(hours){
 
-    generator(hours['monday']);
-    //generator(hours['tuesday']);
+     generator(hours['monday']);
+     generator(hours['tuesday']);
+     generator(hours['wednesday']);
+     generator(hours['thursday']);
+     generator(hours['friday']);
 
-}
+ }
 
 function generator(hours){
     let i = 0
