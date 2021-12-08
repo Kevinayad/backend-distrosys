@@ -1,6 +1,8 @@
 const mqtt = require("mqtt");
 const topics = require("./topics");
-
+const appointments = require("../controller/appointments")
+const validatorTopic = topics.validatorTopic;
+const GUITopic = topics.frontendTopic;
 const localHost = 'mqtt://127.0.0.1'; // Local host
 const remoteHost = ''; // Remote host
 
@@ -27,36 +29,39 @@ const options = {
 
 const client = mqtt.connect(options.hostURL, options);
 
-client.on("connect", function() {
+function publish(topic, message) {
+    client.publish(topic, message, { qos: 1, retain:false });
+}
 
-    const valTopic = topics.validatorTopic;
-    const handlerTopic = topics.bookingHandlerTopic;
-    const GUITopic = topics.frontendTopic;
+client.on("connect", function() {   
 
     function subscribe(topic) {
         client.subscribe(topic);
         console.log("Subscribed to: " + topic);
     }
 
-    function publish(topic, message) {
-        client.publish(topic, message, { qos: 1, retain:false });
-    }
+    var appointmentMessage = {
+        "userid": 12345,
+        "requestid": 13,
+        "dentistid": 1,
+        "issuance": 1602406766314,
+        "date": "2020-12-14"
+    };
 
-    subscribe(valTopic);
-    subscribe(handlerTopic);
+    subscribe(validatorTopic);
+    //To discuss: for future implementation of occupying timeslot before confirming booking request
     subscribe(GUITopic);
 
-    publish(valTopic, 'Validate this: ...');
-    publish(handlerTopic, 'Handle this: ...');
     publish(GUITopic, 'User request: ...');
+    //TODO: update frontend with real-time available timeslots
+
+    publish(validatorTopic, JSON.stringify(appointmentMessage));
 })
 
 client.on('message', function(topic, message) {
-    /* TODO: work in progress (User story 3)
-    if (topic == topics.frontendTopic){
-        //call Booking handler, to create appointment before persisting it
-        //bookingRequest is either a String or a JSON, choice needs to be taken
-        publish(handlerTopic, message)
-    } */
+    
+    if (topic == validatorTopic){
+        appointments.persistAppointment(message);
+    }
     console.log(message.toString());
 })
