@@ -40,22 +40,12 @@ client.on("connect", function() {
         console.log("Subscribed to: " + topic);
     }
 
-    var appointmentMessage = {
-        "userid": 12345,
-        "requestid": 13,
-        "dentistid": 1,
-        "issuance": 1602406766314,
-        "date": "2020-12-14"
-    };
-
     subscribe(validatorTopic);
     //To discuss: for future implementation of occupying timeslot before confirming booking request
     subscribe(GUITopic);
 
     publish(GUITopic, 'User request: ...');
     //TODO: update frontend with real-time available timeslots
-
-    publish(validatorTopic, JSON.stringify(appointmentMessage));
 })
 
 client.on('message', function(topic, message) {

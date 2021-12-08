@@ -1,15 +1,14 @@
-var express = require('express');
 var mongoose = require('mongoose');
-
-//ISSUE: appointment.save does not work. Research on how to save on DB using mongoose, or other method
-var app = express();
-app.use(appointments);
 
 //call this method from backend broker
 //saves new appointment in database
 function persistAppointment(appointmentMessage){
     var appointment = JSON.parse(appointmentMessage);
-    appointment.save();
+    var conn = mongoose.connection;
+    conn.collection("appointments").insert(appointment, function (err, res) {
+        if (err) throw err;
+        console.log("1 document inserted");
+    });
 }
 
 exports.persistAppointment = persistAppointment;
