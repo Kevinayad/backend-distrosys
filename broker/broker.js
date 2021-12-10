@@ -45,7 +45,6 @@ client.on("connect", function() {
     subscribe(frontendTopic);
     //publish(frontendTopic, 'User request: ...');
     //TODO: update frontend with real-time available timeslots
-    publish(validatorTopic, 'Hello');
 })
 
 client.on('message', function(topic, message) {
