@@ -1,6 +1,8 @@
 const mqtt = require("mqtt");
 const topics = require("./topics");
-
+const appointments = require("../controller/appointments")
+const validatorTopic = topics.validatorTopic;
+const frontendTopic = topics.frontendTopic;
 const localHost = 'mqtt://127.0.0.1'; // Local host
 const remoteHost = ''; // Remote host
 
@@ -11,46 +13,44 @@ const port = ':1883';
 
 const options = {
     keepalive: 60,
-	protocolId: 'MQTT',
-	protocolVersion: 4,
-	clean: true,
-	reconnectPeriod: 1000,
-	connectTimeout: 30 * 1000,
-	will: {
-		topic: 'WillMsg',
-		payload: 'Connection Closed abnormally..!',
-		qos: 1,
-		retain: false
-	},
+    protocolId: 'MQTT',
+    protocolVersion: 4,
+    clean: true,
+    reconnectPeriod: 1000,
+    connectTimeout: 30 * 1000,
+    will: {
+        topic: 'WillMsg',
+        payload: 'Connection Closed abnormally..!',
+        qos: 1,
+        retain: false
+    },
     hostURL: (host+port)
 }
 
 const client = mqtt.connect(options.hostURL, options);
 
-client.on("connect", function() {
+function publish(topic, message) {
+    client.publish(topic, message, { qos: 1, retain:false });
+}
 
-    const valTopic = topics.validatorTopic;
-    const handlerTopic = topics.bookingHandlerTopic;
-    const GUITopic = topics.frontendTopic;
+client.on("connect", function() {
 
     function subscribe(topic) {
         client.subscribe(topic);
         console.log("Subscribed to: " + topic);
     }
 
-    function publish(topic, message) {
-        client.publish(topic, message, { qos: 1, retain:false });
-    }
-
-    subscribe(valTopic);
-    subscribe(handlerTopic);
-    subscribe(GUITopic);
-
-    publish(valTopic, 'Validate this: ...');
-    publish(handlerTopic, 'Handle this: ...');
-    publish(GUITopic, 'User request: ...');
+    subscribe(validatorTopic);
+    //To discuss: for future implementation of occupying timeslot before confirming booking request
+    subscribe(frontendTopic);
+    //publish(frontendTopic, 'User request: ...');
+    //TODO: update frontend with real-time available timeslots
 })
 
 client.on('message', function(topic, message) {
+
+    if (topic == validatorTopic){
+        appointments.persistAppointment(message);
+    }
     console.log(message.toString());
 })
