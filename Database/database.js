@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 const jsonFile = require("./dentistRepo.json");
-const  parseJson  = require('../timeslotGenerator/parseJson');
+const parseJson = require('../timeslotGenerator/parseJson');
 
 
 const mongoURI = "mongodb+srv://team12user:team12developer@dit355team12cluster.bwr7a.mongodb.net/dentistimodb?retryWrites=true";
@@ -12,8 +12,15 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
         process.exit(1);
     }
     console.log(`Connected to MongoDB with URI: ${mongoURI}`);
-    
-    parseJson.parseJson(jsonFile,conn);
 
+    parseJson.parseJson(jsonFile, conn);
+    mongoose.connection.db.listCollections().toArray(function(err, names) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            names.forEach(function(e,i,a) {
+                console.log("----->", e.name);
+            });
+        }
 });
-
