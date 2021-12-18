@@ -2,14 +2,13 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var dentistSchema = new Schema({
-    id: {type: int},
+    id: {type: Number},
     name: {type: String},
     owner: {type: String},
-    dentists: {type: int},
+    dentists: {type: Number},
     address: {type: String},
     city: {type: String},
-    coordinatelong: {type: double}, //Note: the data type might not reflect the accuracy needed
-    coordinatelat: {type: double},
+    coordinate: {type: Array }, //Note: the data type might not reflect the accuracy needed
     openinghours: {type: Array}, //Note: The index of the array would represent the weekday, and its content the opening hours
 
 });
