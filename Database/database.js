@@ -13,14 +13,19 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
     }
     console.log(`Connected to MongoDB with URI: ${mongoURI}`);
 
-    parseJson.parseJson(jsonFile, conn);
-    mongoose.connection.db.listCollections().toArray(function(err, names) {
-        if (err) {
-            console.log(err);
+
+    // To Count Documents of a particular collection
+    mongoose.connection.db.collection('dentists').count(function(err, count) {
+        console.dir(err);
+        console.dir(count);
+
+        if( count == 0) {
+            console.log("The dentists are successfully saved into database");
+            parseJson.parseJson(jsonFile, conn);
+
         }
         else {
-            names.forEach(function(e,i,a) {
-                console.log("----->", e.name);
-            });
+            console.log("Number of registered dentists : " + count);
         }
-});
+    });
+    });
