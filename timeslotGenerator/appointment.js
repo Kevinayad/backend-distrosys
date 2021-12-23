@@ -2,11 +2,15 @@
 var moment = require('moment');
 function slotGenerator(hours){
 
-    generator(hours['monday']);
-    generator(hours['tuesday']);
-    generator(hours['wednesday']);
-    generator(hours['thursday']);
-    generator(hours['friday']);
+    var totalTimes = {};
+
+    totalTimes['monday'] = generator(hours['monday']);
+    totalTimes['tuesday'] = generator(hours['tuesday']);
+    totalTimes['wednesday'] = generator(hours['wednesday']);
+    totalTimes['thursday'] = generator(hours['thursday']);
+    totalTimes['friday'] = generator(hours['friday']);
+
+    return totalTimes;
 
 }
 
@@ -34,10 +38,16 @@ function generator(hours){
    var end = moment(last, 'HH:mm');
 
    var times = [];
+   var x = true;
    while (start <= end){
-       times.push(new moment(start).format('HH:mm'));
+       var slot = moment(start).format('HH:mm')
+       if (slot == '11:30' || slot == '12:00' || slot == '16:00'){
+           x = false;
+       }
+       times.push({time: new moment(start).format('HH:mm'), av: x});
        start.add(30, 'minutes');
+       x = true;
    }
-   console.log(times);
+   return times;
 }
 module.exports.slotGenerator = slotGenerator;
