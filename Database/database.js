@@ -1,16 +1,31 @@
 var mongoose = require('mongoose');
+const jsonFile = require("./dentistRepo.json");
+const parseJson = require('../timeslotGenerator/parseJson');
+
 
 const mongoURI = "mongodb+srv://team12user:team12developer@dit355team12cluster.bwr7a.mongodb.net/dentistimodb?retryWrites=true";
-
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, function(err) {
+var conn = mongoose.connection;
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, function (err) {
     if (err) {
         console.error(`Failed to connect to MongoDB with URI: ${mongoURI}`);
         console.error(err.stack);
         process.exit(1);
     }
     console.log(`Connected to MongoDB with URI: ${mongoURI}`);
-});
 
-var conn = mongoose.connection;
 
-exports.conn = conn;
+    // To Count Documents of a particular collection
+    mongoose.connection.db.collection('dentists').count(function(err, count) {
+        console.dir(err);
+        console.dir(count);
+
+        if( count == 0) {
+            console.log("The dentists are successfully saved into database");
+            parseJson.parseJson(jsonFile, conn);
+
+        }
+        else {
+            console.log("Number of registered dentists : " + count);
+        }
+    });
+    });

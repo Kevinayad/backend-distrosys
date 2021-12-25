@@ -4,10 +4,7 @@
 
 ### 1. each time you clone execute 
 ```
-npm install
-```
-
-### 2. Execute 
-```
-npm run dev
+cd backend
+chmod u+x depend.sh
+./depend.sh
 ```
