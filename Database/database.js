@@ -2,9 +2,9 @@ var mongoose = require('mongoose');
 const jsonFile = require("./dentistRepo.json");
 const parseJson = require('../timeslotGenerator/parseJson');
 
-
 const mongoURI = "mongodb+srv://team12user:team12developer@dit355team12cluster.bwr7a.mongodb.net/dentistimodb?retryWrites=true";
-var conn = mongoose.connection;
+
+var dentCollection;
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, function (err) {
     if (err) {
         console.error(`Failed to connect to MongoDB with URI: ${mongoURI}`);
@@ -13,19 +13,41 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
     }
     console.log(`Connected to MongoDB with URI: ${mongoURI}`);
 
+    var conn = mongoose.connection;
+
+    dentCollection = conn.collection("dentists");
 
     // To Count Documents of a particular collection
-    mongoose.connection.db.collection('dentists').count(function(err, count) {
-        console.dir(err);
-        console.dir(count);
+    dentCollection.count(function(err, count) {
+        if (err) console.dir(err);
 
         if( count == 0) {
-            console.log("The dentists are successfully saved into database");
             parseJson.parseJson(jsonFile, conn);
-
+            console.log("The dentists are successfully saved into the database");
         }
         else {
-            console.log("Number of registered dentists : " + count);
+            console.log("Number of registered dentists: " + count);
         }
     });
     });
+
+    var allClinics = [];
+
+    function getTimeSlots() {
+        dentCollection.find({}).toArray( function(err, result) {
+            if (err) throw err;
+            storeTimeSlots(result);
+            });
+        return allClinics;
+    }
+
+    function storeTimeSlots(result) {
+        for (var i = 0; i < result.length; i++){
+            var clinic = result[i];
+            var timeSlots = clinic.timeSlots;
+            var name = "Clinic " + (i+1);
+            allClinics[name] = timeSlots;
+        }
+        console.log('Finished');
+    }
+    exports.getTimeSlots = getTimeSlots;

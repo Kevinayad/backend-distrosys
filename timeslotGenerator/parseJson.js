@@ -10,7 +10,6 @@ function parseJson(file,conn) {
         var myJSON = JSON.parse(JSON.stringify(clinics[i]));
         myClinic = dentist(myJSON);
         myClinic.timeSlots = generator.slotGenerator(clinic.openinghours);
-        console.log(myClinic);
         myClinic.save(conn);
     }
 
