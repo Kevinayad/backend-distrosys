@@ -10,8 +10,9 @@ var dentistSchema = new Schema({
     city: {type: String},
     coordinate: {type: Array }, //Note: the data type might not reflect the accuracy needed
     openinghours: {type: Array}, //Note: The index of the array would represent the weekday, and its content the opening hours
-    timeSlots: {type: Array}
+    timeSlots: {type: Object}
 
 });
 
 module.exports = mongoose.model('Dentist', dentistSchema);
+

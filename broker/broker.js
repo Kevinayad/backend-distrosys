@@ -1,6 +1,7 @@
 const mqtt = require("mqtt");
 const topics = require("./topics");
-const appointments = require("../controller/appointments")
+const appointments = require("../controller/appointments");
+const database = require('../Database/database');
 const validatorTopic = topics.validatorTopic;
 const frontendTopic = topics.frontendTopic;
 const localHost = 'mqtt://127.0.0.1'; // Local host
@@ -33,13 +34,12 @@ function publish(topic, message) {
     client.publish(topic, message, { qos: 1, retain:false });
 }
 
-client.on("connect", function() {
-
+client.on('connect', function() {
     function subscribe(topic) {
         client.subscribe(topic);
         console.log("Subscribed to: " + topic);
     }
-
+    
     subscribe(validatorTopic);
     //To discuss: for future implementation of occupying timeslot before confirming booking request
     subscribe(frontendTopic);
@@ -52,5 +52,9 @@ client.on('message', function(topic, message) {
     if (topic == validatorTopic){
         appointments.persistAppointment(message);
     }
-    console.log(message.toString());
+    if (topic == frontendTopic) {
+        result = database.getTimeSlots();
+        console.log(result);
+    }
+    //console.log(message.toString());
 })
