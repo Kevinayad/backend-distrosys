@@ -53,7 +53,8 @@ client.on('message', function(topic, message) {
         appointments.persistAppointment(message);
     }
     if (topic == frontendTopic) {
-        result = database.getTimeSlots();
+        //database.timeSlots();
+        result = database.timeSlots();
         console.log(result);
     }
     //console.log(message.toString());
