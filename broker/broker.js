@@ -55,7 +55,7 @@ client.on('message', function(topic, message) {
     if (topic == frontendTopic) {
         //database.timeSlots();
         result = database.timeSlots();
-        console.log(result);
+        //console.log(result);
     }
     //console.log(message.toString());
 })
