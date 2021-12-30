@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "moment": "^2.29.1",
-    "mongoose": "^6.0.14"
-  }
-}
