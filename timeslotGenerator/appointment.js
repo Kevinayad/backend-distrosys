@@ -2,19 +2,20 @@
 var moment = require('moment');
 function slotGenerator(hours){
 
-    var totalTimes = {};
+    var totalTimes = [];
 
-    totalTimes['monday'] = generator(hours['monday']);
-    totalTimes['tuesday'] = generator(hours['tuesday']);
-    totalTimes['wednesday'] = generator(hours['wednesday']);
-    totalTimes['thursday'] = generator(hours['thursday']);
-    totalTimes['friday'] = generator(hours['friday']);
+    totalTimes.push([{day: 'sunday'}]);
+    totalTimes.push(generator(hours['monday'], 'monday'));
+    totalTimes.push(generator(hours['tuesday'], 'tuesday'));
+    totalTimes.push(generator(hours['wednesday'], 'wednesday'));
+    totalTimes.push(generator(hours['thursday'], 'thursday'));
+    totalTimes.push(generator(hours['friday'], 'friday'));
+    totalTimes.push([{day: 'saturday'}]);
 
     return totalTimes;
-
 }
 
-function generator(hours){
+function generator(hours, date){
    let i = 0
    var first = '';
    while ('-' != hours.charAt(i)){
@@ -44,7 +45,7 @@ function generator(hours){
        if (slot == '11:30' || slot == '12:00' || slot == '16:00'){
            x = false;
        }
-       times.push({time: new moment(start).format('HH:mm'), av: x});
+       times.push({day: date, time: new moment(start).format('HH:mm'), av: x});
        start.add(30, 'minutes');
        x = true;
    }

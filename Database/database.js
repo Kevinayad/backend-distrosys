@@ -34,7 +34,6 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
     });
 
     var allClinics = [];
-    var days;
 
     function getClinics() {
         dentCollection.find({}).toArray( function(err, result) {
@@ -59,25 +58,27 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
 
     function changeTimeSlots(slots) {
         var completeSlots = [];
-        days = 0;
-        completeSlots.monday = dailySlots(slots.monday);
-        completeSlots.tuesday = dailySlots(slots.tuesday);
-        completeSlots.wednesday = dailySlots(slots.wednesday);
-        completeSlots.thursday = dailySlots(slots.thursday);
-        completeSlots.friday = dailySlots(slots.friday);
+        const currentDate = new Date();
+        var currentDay = currentDate.getDay();
+        for (let i = 0; i <slots.length; i++) {
+            var location = (i + currentDay) % slots.length;
+            completeSlots[location] = dailySlots(slots[location])
+        }
         return completeSlots;
     }
 
     function dailySlots(slots) {
         var newSlots = [];
-        for (let i = 0; i < slots.length; i++){
-            var slot = moment(slots[i].time, 'HH:mm');
-            var date = moment(slot).toDate();
-            date.setDate(date.getDate() + days);
-            var x = slots[i].av;
-            newSlots.push({time: date, av: x});
+        if (slots.length > 1) {
+            for (let i = 0; i < slots.length; i++){
+                var slot = moment(slots[i].time, 'HH:mm');
+                var date = moment(slot).toDate();
+                var x = slots[i].av;
+                newSlots.push({time: date, av: x});
+            }
+        } else {
+            newSlots = 'Unavailable day';
         }
-        days = days +1;
         return newSlots;
     }
 
