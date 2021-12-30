@@ -34,6 +34,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
     });
 
     var allClinics = [];
+    var days;
 
     function getClinics() {
         dentCollection.find({}).toArray( function(err, result) {
@@ -58,6 +59,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
 
     function changeTimeSlots(slots) {
         var completeSlots = [];
+        days = 0;
         completeSlots.monday = dailySlots(slots.monday);
         completeSlots.tuesday = dailySlots(slots.tuesday);
         completeSlots.wednesday = dailySlots(slots.wednesday);
@@ -71,9 +73,11 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
         for (let i = 0; i < slots.length; i++){
             var slot = moment(slots[i].time, 'HH:mm');
             var date = moment(slot).toDate();
+            date.setDate(date.getDate() + days);
             var x = slots[i].av;
             newSlots.push({time: date, av: x});
         }
+        days = days +1;
         return newSlots;
     }
 
