@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 const jsonFile = require("./dentistRepo.json");
 const parseJson = require('../timeslotGenerator/parseJson');
+const broker = require('../broker/broker');
 var moment = require('moment');
 
 const mongoURI = "mongodb+srv://team12user:team12developer@dit355team12cluster.bwr7a.mongodb.net/dentistimodb?retryWrites=true";
@@ -30,22 +31,21 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
             console.log("Number of registered dentists: " + count);
         }
     });
-
     });
 
-    var allClinics = [];
-
-    function getClinics() {
+    function timeSlots(topic) {
         dentCollection.find({}).toArray( function(err, result) {
             if (err) throw err;
-            allClinics = result;
+            var slots =  storeTimeSlots(result);
+            stringResult = JSON.stringify(slots);
+            broker.publish(topic, stringResult);
             });
     }
 
-    function storeTimeSlots() {
+    function storeTimeSlots(result) {
         obj = {};
-        for (var i = 0; i < allClinics.length; i++){
-            var clinic = allClinics[i];
+        for (var i = 0; i < result.length; i++){
+            var clinic = result[i];
             var timeSlots = clinic.timeSlots;
             var changedTimeSlots = changeTimeSlots(timeSlots);
             var name = 'Clinic' + (i+1);
@@ -91,8 +91,4 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
         return newSlots;
     }
 
-    function timeSlots() {
-        getClinics();
-        return storeTimeSlots();
-    }
     exports.timeSlots = timeSlots;

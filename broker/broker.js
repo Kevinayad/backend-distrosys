@@ -54,8 +54,8 @@ client.on('message', function(topic, message) {
         appointments.persistAppointment(message);
     }
     if (topic == frontendTopic) {
-        result = database.timeSlots();
-        stringResult = JSON.stringify(result);
-        publish(backendTopic, stringResult);
+        database.timeSlots(backendTopic);
     }
 })
+
+exports.publish = publish;
