@@ -4,6 +4,7 @@ const appointments = require("../controller/appointments");
 const database = require('../Database/database');
 const validatorTopic = topics.validatorTopic;
 const frontendTopic = topics.frontendTopic;
+const backendTopic = topics.backendTopic;
 const localHost = 'mqtt://127.0.0.1'; // Local host
 const remoteHost = ''; // Remote host
 
@@ -54,9 +55,7 @@ client.on('message', function(topic, message) {
     }
     if (topic == frontendTopic) {
         result = database.timeSlots();
-
-        //Example of clinic 1's timeslot for the next work week.
-        console.log('Clinic 1:');
-        console.log(result[0]);
+        stringResult = JSON.stringify(result);
+        publish(backendTopic, stringResult);
     }
 })

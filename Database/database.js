@@ -43,19 +43,20 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
     }
 
     function storeTimeSlots() {
-        arr = [];
+        obj = {};
         for (var i = 0; i < allClinics.length; i++){
             var clinic = allClinics[i];
             var timeSlots = clinic.timeSlots;
             var changedTimeSlots = changeTimeSlots(timeSlots);
-            arr[i] = changedTimeSlots;
+            var name = 'Clinic' + (i+1);
+            obj[name] = changedTimeSlots;
         }
         console.log('Finished');
-        return arr;
+        return obj;
     }
 
     function changeTimeSlots(slots) {
-        var completeSlots = [];
+        var completeSlots = {};
         const currentDate = new Date();
         var currentDay = currentDate.getDay();
         var dayCounter = 0;
@@ -72,7 +73,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
     }
 
     function dailySlots(slots, days) {
-        var newSlots = [];
+        var newSlots = {};
         if (slots.length > 1) {
             for (let i = 0; i < slots.length; i++){
                 var slot = moment(slots[i].time, 'HH:mm');
@@ -81,7 +82,8 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
                 date.setDate(date.getDate() + days);
                 var x = slots[i].av;
                 var cDay = slots[i].day;
-                newSlots.push({day : cDay, time: date, av: x});
+                var simpleSlot = slots[i].time;
+                newSlots[simpleSlot] = {day : cDay, time: date, av: x};
             }
         } else {
             newSlots = 'Unavailable day';
