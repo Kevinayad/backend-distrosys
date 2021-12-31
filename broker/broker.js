@@ -3,18 +3,24 @@ const topics = require("./topics");
 const appointments = require("../controller/appointments")
 const validatorTopic = topics.validatorTopic;
 const frontendTopic = topics.frontendTopic;
-const localHost = 'mqtt://127.0.0.1'; // Local host
-const remoteHost = ''; // Remote host
+//const localHost = 'mqtt://127.0.0.1'; // Local host
+const host = "ws://broker.emqx.io:8083/mqtt"
 
-// Change the value of host to the host in use.
-const host = localHost;
 
-const port = ':1883';
+//const port = ':8083';
+var clientId =
+  "mqttjs_" +
+  Math.random()
+    .toString(16)
+    .substr(3, 8);
 
 const options = {
     keepalive: 60,
     protocolId: 'MQTT',
     protocolVersion: 4,
+    clientId: clientId,
+    username: 'group12',
+    password: '12',
     clean: true,
     reconnectPeriod: 1000,
     connectTimeout: 30 * 1000,
@@ -24,20 +30,23 @@ const options = {
         qos: 1,
         retain: false
     },
-    hostURL: (host+port)
+    //hostURL: (host+port)
 }
 
-const client = mqtt.connect(options.hostURL, options);
+//const client = mqtt.connect(options.hostURL, options);
+const client = mqtt.connect(host, options);
+
 
 function publish(topic, message) {
     client.publish(topic, message, { qos: 1, retain:false });
 }
 
 client.on("connect", function() {
-
+    console.log("Connecting mqtt client");
     function subscribe(topic) {
         client.subscribe(topic);
-        console.log("Subscribed to: " + topic);
+        console.log("Subscribed to: " + topic, { qos: 2 });
+
     }
 
     subscribe(validatorTopic);
@@ -54,3 +63,16 @@ client.on('message', function(topic, message) {
     }
     console.log(message.toString());
 })
+
+
+
+module.exports={
+    publish(topic,message){
+      publish(topic,message)
+    },
+    subscribe(topic){
+      subscribe(topic)
+    },
+    client:client,
+  }
+  

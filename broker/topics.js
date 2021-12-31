@@ -1,5 +1,5 @@
-const validatorTopic = 'Validator';
-const frontendTopic = 'Frontend'
+const validatorTopic = 'validator/#';
+const frontendTopic = 'frontend/#'
 
 exports.frontendTopic = frontendTopic;
 exports.validatorTopic = validatorTopic;
