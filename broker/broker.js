@@ -53,9 +53,10 @@ client.on('message', function(topic, message) {
         appointments.persistAppointment(message);
     }
     if (topic == frontendTopic) {
-        //database.timeSlots();
         result = database.timeSlots();
-        //console.log(result);
+
+        //Example of clinic 1's timeslot for the next work week.
+        console.log('Clinic 1:');
+        console.log(result[0]);
     }
-    //console.log(message.toString());
 })

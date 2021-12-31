@@ -48,10 +48,8 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
             var clinic = allClinics[i];
             var timeSlots = clinic.timeSlots;
             var changedTimeSlots = changeTimeSlots(timeSlots);
-            var name = "Clinic " + (i+1);
-            arr[name] = changedTimeSlots;
+            arr[i] = changedTimeSlots;
         }
-        console.log(arr);
         console.log('Finished');
         return arr;
     }
@@ -60,24 +58,27 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
         var completeSlots = [];
         const currentDate = new Date();
         var currentDay = currentDate.getDay();
+        var dayCounter = 0;
         const allDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
         for (let i = 0; i <slots.length; i++) {
             var location = (i + currentDay) % slots.length;
-            var dayName = allDays[location];
-            completeSlots[dayName] = dailySlots(slots[location])
+            if (location != 0 && location != 6) {
+                var dayName = allDays[location];
+                completeSlots[dayName] = dailySlots(slots[location], dayCounter)
+            }
+            dayCounter++;
         }
         return completeSlots;
     }
 
-    function dailySlots(slots) {
+    function dailySlots(slots, days) {
         var newSlots = [];
         if (slots.length > 1) {
             for (let i = 0; i < slots.length; i++){
                 var slot = moment(slots[i].time, 'HH:mm');
                 slot.add(1, 'hours');
-                //console.log(slot);
                 var date = moment(slot).toDate();
-                //console.log(date);
+                date.setDate(date.getDate() + days);
                 var x = slots[i].av;
                 var cDay = slots[i].day;
                 newSlots.push({day : cDay, time: date, av: x});
@@ -85,7 +86,6 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
         } else {
             newSlots = 'Unavailable day';
         }
-        //console.log(newSlots);
         return newSlots;
     }
 
