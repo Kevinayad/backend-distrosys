@@ -7,6 +7,9 @@ var moment = require('moment');
 const mongoURI = "mongodb+srv://team12user:team12developer@dit355team12cluster.bwr7a.mongodb.net/dentistimodb?retryWrites=true";
 
 var dentCollection;
+var scheduleCollection;
+var conn = mongoose.connection;
+
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, function (err) {
     if (err) {
         console.error(`Failed to connect to MongoDB with URI: ${mongoURI}`);
@@ -15,16 +18,17 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
     }
     console.log(`Connected to MongoDB with URI: ${mongoURI}`);
 
-    var conn = mongoose.connection;
-
     dentCollection = conn.collection("dentists");
+
+    scheduleCollection = conn.collection("schedule");
 
     // To Count Documents of a particular collection
     dentCollection.count(function(err, count) {
         if (err) console.dir(err);
 
-        if( count == 0) {
+        if(count == 0) {
             parseJson.parseJson(jsonFile, conn);
+            timeSlots(1);
             console.log("The dentists are successfully saved into the database");
         }
         else {
@@ -33,13 +37,28 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
     });
     });
 
+    var schedule = [];
+
     function timeSlots(topic) {
         dentCollection.find({}).toArray( function(err, result) {
             if (err) throw err;
             var slots =  storeTimeSlots(result);
-            stringResult = JSON.stringify(slots);
-            broker.publish(topic, stringResult);
+            if (topic == 1) {
+                saveSchedule(slots);
+            } else {
+                stringResult = JSON.stringify(slots);
+                broker.publish(topic, stringResult);
+            }
             });
+    }
+
+    function saveSchedule(slots) {
+        scheduleCollection.insertOne(slots, function (err, res) {
+            if (err) {
+                throw err;
+            }
+            console.log('Schedule for the week inserted');
+        })
     }
 
     function storeTimeSlots(result) {
@@ -51,7 +70,6 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
             var name = 'Clinic' + (i+1);
             obj[name] = changedTimeSlots;
         }
-        console.log('Finished');
         return obj;
     }
 
@@ -91,4 +109,32 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
         return newSlots;
     }
 
+    function checkAppointment(appointment) {
+        var clinicID = appointment.dentistid;
+        var date = new Date(appointment.date);
+        var day = date.getDay();
+        var time = appointment.time;
+        var check = false;
+        var clinicName = 'Clinic' + (clinicID);
+        if (schedule.length == 0) {
+            console.log('No current schedule');
+        } else {
+            var clinic = schedule[clinicName];
+            const allDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            var daySchedule = clinic[allDays[day]];
+            var slot = daySchedule[time];
+            if (slot.av == true) {
+                slot.av = false;
+                check = true;
+            }
+        }
+        if (check) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+
     exports.timeSlots = timeSlots;
+    exports.checkAppointment = checkAppointment;
+    exports.conn = conn;
