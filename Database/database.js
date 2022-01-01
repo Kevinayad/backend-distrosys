@@ -48,6 +48,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
             } else {
                 stringResult = JSON.stringify(slots);
                 broker.publish(topic, stringResult);
+                console.log('Schedule sent to: ' + topic + ' topic');
             }
             });
     }
@@ -109,24 +110,21 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
         return newSlots;
     }
 
-    function checkAppointment(appointment) {
+    async function checkAppointment(appointment) {
         var clinicID = appointment.dentistid;
         var date = new Date(appointment.date);
         var day = date.getDay();
         var time = appointment.time;
         var check = false;
         var clinicName = 'Clinic' + (clinicID);
-        if (schedule.length == 0) {
-            console.log('No current schedule');
-        } else {
-            var clinic = schedule[clinicName];
-            const allDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-            var daySchedule = clinic[allDays[day]];
-            var slot = daySchedule[time];
-            if (slot.av == true) {
-                slot.av = false;
-                check = true;
-            }
+        const result = await scheduleCollection.findOne({});
+        var clinic = result[clinicName];
+        const allDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        var daySchedule = clinic[allDays[day]];
+        var slot = daySchedule[time];
+        if (slot.av == true) {
+            slot.av = false;
+            check = true;
         }
         if (check) {
             return 1;

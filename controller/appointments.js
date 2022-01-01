@@ -5,8 +5,7 @@ var conns = require("../Database/database");
 async function persistAppointment(appointmentMessage){
     var appointment = JSON.parse(appointmentMessage);
     var conn = conns.conn;
-    var check = conns.checkAppointment(appointment);
-    console.log(check);
+    var check = await conns.checkAppointment(appointment);
     if (check == 1){
         conn.collection("appointments").insertOne(appointment, function (err, res) {
         if (err) throw err;
