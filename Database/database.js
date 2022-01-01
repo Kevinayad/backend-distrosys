@@ -115,15 +115,28 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
         var date = new Date(appointment.date);
         var day = date.getDay();
         var time = appointment.time;
+        var hours = time.slice(0,2);
+        var minutes = time.slice(3,5);
+        date.setHours(hours,minutes,0);
+        date.setTime(date.getTime() + (1*60*60*1000));
         var check = false;
         var clinicName = 'Clinic' + (clinicID);
-        const result = await scheduleCollection.findOne({});
+        var result = await scheduleCollection.findOne({});
         var clinic = result[clinicName];
         const allDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
         var daySchedule = clinic[allDays[day]];
         var slot = daySchedule[time];
-        if (slot.av == true) {
+        var slotTime = slot.time;
+        if (date.getTime() == slotTime.getTime() && slot.av == true) {
             slot.av = false;
+            await scheduleCollection.deleteOne({}, function (err, res) {
+                if (err) {throw err};
+                console.log('First schedule removed');
+            });
+            await scheduleCollection.insertOne(result, function (err, res) {
+                if (err) {throw err};
+                console.log('Second schedule added');
+            });
             check = true;
         }
         if (check) {
