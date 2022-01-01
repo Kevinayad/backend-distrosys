@@ -51,7 +51,7 @@ client.on('connect', function() {
 client.on('message', function(topic, message) {
 
     if (topic == validatorTopic){
-        appointments.persistAppointment(message);
+        //appointments.persistAppointment(message);
     }
     if (topic == frontendTopic) {
         database.timeSlots(backendTopic);
