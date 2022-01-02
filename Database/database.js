@@ -39,7 +39,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
 
     var schedule = [];
 
-    function timeSlots(topic) {
+    function timeSlots(topic, client) {
         dentCollection.find({}).toArray( function(err, result) {
             if (err) throw err;
             var slots =  storeTimeSlots(result);
@@ -47,8 +47,8 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
                 saveSchedule(slots);
             } else {
                 stringResult = JSON.stringify(slots);
-                broker.publish(topic, stringResult);
-                console.log('Schedule sent to: ' + topic + ' topic');
+                broker.publish(topic, stringResult, client);
+                console.log('Schedule sent to: ' + topic + ' topic. Client: ' + client.options.identifier);
             }
             });
     }
