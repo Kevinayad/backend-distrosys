@@ -7,9 +7,9 @@ const frontendTopic = topics.frontendTopic;
 const backendTopic = topics.backendTopic;
 const localHost = 'mqtt://127.0.0.1'; // Local host
 const remoteHost = ''; // Remote host
+const localPort = ':1883';
+const remotePort = ':8083';
 
-
-//const port = ':8083';
 var clientId =
   "mqttjs_" +
   Math.random()
@@ -32,11 +32,11 @@ const options = {
         qos: 1,
         retain: false
     },
-    //hostURL: (host+port)
+    hostURL: (localHost+localPort)
 }
 
-//const client = mqtt.connect(options.hostURL, options);
-const client = mqtt.connect(host, options);
+const client = mqtt.connect(options.hostURL, options);
+//const client = mqtt.connect(host, options);
 
 
 function publish(topic, message) {
