@@ -7,7 +7,7 @@ var path = require("path");
 var cors = require("cors");
 var history = require("connect-history-api-fallback");
 
-var database = require('./database/database');
+var database = require('./Database/database');
 var broker = require('./broker/broker');
 
 // Create Express app
