@@ -37,20 +37,19 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
     });
     });
 
-    var schedule = [];
-
-    function timeSlots(topic, client) {
-        dentCollection.find({}).toArray( function(err, result) {
-            if (err) throw err;
-            var slots =  storeTimeSlots(result);
+    async function timeSlots(topic, client) {
             if (topic == 1) {
-                saveSchedule(slots);
+                dentCollection.find({}).toArray( function(err, result) {
+                    if (err) throw err;
+                    var slots =  storeTimeSlots(result);
+                    saveSchedule(slots);
+                });
             } else {
-                stringResult = JSON.stringify(slots);
+                var result = await scheduleCollection.findOne({});
+                stringResult = JSON.stringify(result);
                 broker.publish(topic, stringResult, client);
                 console.log('Schedule sent to: ' + topic + ' topic. Client: ' + client.options.identifier);
             }
-            });
     }
 
     function saveSchedule(slots) {
