@@ -97,7 +97,7 @@ remoteClient.on('message', function(topic, message) {
     if (topic == frontendTopic) {
         database.timeSlots(backendTopic, remoteClient);
     }
-    console.log(JSON.parse(message));
+    //console.log(JSON.parse(message));
 })
 
 exports.publish = publish;

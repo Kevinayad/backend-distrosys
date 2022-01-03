@@ -46,11 +46,37 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
                 });
             } else {
                 var result = await scheduleCollection.findOne({});
-                stringResult = JSON.stringify(result);
-                broker.publish(topic, stringResult, client);
+                var schedule = scheduleFrontend(result);
+                broker.publish(topic, schedule, client);
                 console.log('Schedule sent to: ' + topic + ' topic. Client: ' + client.options.identifier);
             }
     }
+
+    function scheduleFrontend(result) {
+        var obj = {};
+        const allDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        for (let i = 0; i < 4; i++) {
+            var name = 'Clinic' + (i+1);
+            var weekSchedule = [];
+            var clinic = result[name];
+            for (let j = 1; j < 6; j++) {
+                var day = clinic[allDays[j]];
+                const keys = Object.keys(day);
+                var slotArray = [];
+                keys.forEach( (key, index) => {
+                    var slot = day[key];
+                    slotArray.push({ date: slot.time });
+                });
+                var firstDate = slotArray[0].date;
+                var fDate = new Date(firstDate);
+                fDate.setHours(1,0,0);
+                weekSchedule.push({ date: fDate, slots: slotArray });
+            }
+            obj[name] = weekSchedule;
+        }
+        var stringObj = JSON.stringify(obj);
+        return stringObj;
+    };
 
     function saveSchedule(slots) {
         scheduleCollection.insertOne(slots, function (err, res) {
