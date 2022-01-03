@@ -69,7 +69,7 @@ const remoteOptions = {
     protocolId: 'MQTT',
     protocolVersion: 4,
     clientId: clientId,
-    username: 'group12',
+    username: 'test',
     password: '12',
     clean: true,
     reconnectPeriod: 1000,
