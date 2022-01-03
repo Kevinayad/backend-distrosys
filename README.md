@@ -22,6 +22,13 @@ This repository additionally contains technologies and/or parts of code licensed
 * EPL/EDL license
 * Apache 2.0 license
 
+#### Each time the repository is cloned do:
+```
+cd backend
+chmod u+x depend.sh
+./depend.sh
+```
+
 ### Install
 
 1. npm install
