@@ -35,7 +35,7 @@ chmod u+x depend.sh
 
 ### Running the Backend component
 
-1. node broker.js 
+1. npm run dev
 
 ## Development Team
 
