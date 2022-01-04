@@ -37,7 +37,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
     });
     });
 
-    async function timeSlots(topic, client) {
+    async function timeSlots(topic) {
             if (topic == 1) {
                 dentCollection.find({}).toArray( function(err, result) {
                     if (err) throw err;
@@ -47,8 +47,8 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
             } else {
                 var result = await scheduleCollection.findOne({});
                 var schedule = scheduleFrontend(result);
-                broker.publish(topic, schedule, client);
-                console.log('Schedule sent to: ' + topic + ' topic. Client: ' + client.options.identifier);
+                broker.publish(topic, schedule);
+                console.log('Schedule sent to: ' + topic + ' topic.');
             }
     }
 

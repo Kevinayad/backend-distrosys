@@ -46,11 +46,12 @@ const remoteClient = mqtt.connect(remoteOptions.host, remoteOptions);
 remoteClient.on('connect', function() {
     subscribe(validatorTopic);
     subscribe(frontendTopic);
+    publish(frontendTopic, '1');
 });
 
 remoteClient.on('message', function(topic, message) {
     if (topic == frontendTopic) {
-        //database.timeSlots(backendTopic);
+        database.timeSlots(backendTopic);
     }
 })
 
