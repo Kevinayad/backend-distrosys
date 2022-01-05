@@ -1,78 +1,58 @@
 const mqtt = require("mqtt");
 const topics = require("./topics");
-const appointments = require("../controller/appointments")
+const appointments = require("../controller/appointments");
+const database = require('../Database/database');
 const validatorTopic = topics.validatorTopic;
 const frontendTopic = topics.frontendTopic;
-//const localHost = 'mqtt://127.0.0.1'; // Local host
-const host = "ws://broker.emqx.io:8083/mqtt"
+const backendTopic = topics.backendTopic;
 
 
-//const port = ':8083';
-var clientId =
-  "mqttjs_" +
-  Math.random()
-    .toString(16)
-    .substr(3, 8);
+function publish(topic, message) {
+    remoteClient.publish(topic, message, { qos: 1, retain:false });
+}
 
-const options = {
+function subscribe(topic) {
+    remoteClient.subscribe(topic);
+    console.log("Subscribed to: " + topic, { qos: 2 });
+}
+
+const host = "ws://broker.emqx.io"
+const remotePort = ':8083/mqtt';
+
+var clientId ="mqttjs_" + Math.random().toString(16).substr(3, 8);
+
+const remoteOptions = {
     keepalive: 60,
     protocolId: 'MQTT',
     protocolVersion: 4,
     clientId: clientId,
-    username: 'group12',
+    username: 'test',
     password: '12',
     clean: true,
     reconnectPeriod: 1000,
     connectTimeout: 30 * 1000,
     will: {
-        topic: 'WillMsg',
-        payload: 'Connection Closed abnormally..!',
+        topic: 'WillMsg12',
+        payload: 'backend failure',
         qos: 1,
         retain: false
     },
-    //hostURL: (host+port)
+    identifier: 'Remote Host',
+    host: (host+remotePort)
 }
 
-//const client = mqtt.connect(options.hostURL, options);
-const client = mqtt.connect(host, options);
+const remoteClient = mqtt.connect(remoteOptions.host, remoteOptions);
 
-
-function publish(topic, message) {
-    client.publish(topic, message, { qos: 1, retain:false });
-}
-
-client.on("connect", function() {
-    console.log("Connecting mqtt client");
-    function subscribe(topic) {
-        client.subscribe(topic);
-        console.log("Subscribed to: " + topic, { qos: 2 });
-
-    }
-
+remoteClient.on('connect', function() {
     subscribe(validatorTopic);
-    //To discuss: for future implementation of occupying timeslot before confirming booking request
     subscribe(frontendTopic);
-    //publish(frontendTopic, 'User request: ...');
-    //TODO: update frontend with real-time available timeslots
-})
+    publish(frontendTopic, '1');
+});
 
-client.on('message', function(topic, message) {
-
-    if (topic == validatorTopic){
-        appointments.persistAppointment(message);
+remoteClient.on('message', function(topic, message) {
+    if (topic == frontendTopic) {
+        database.timeSlots(backendTopic);
     }
-    console.log(message.toString());
 })
 
-
-
-module.exports={
-    publish(topic,message){
-      publish(topic,message)
-    },
-    subscribe(topic){
-      subscribe(topic)
-    },
-    client:client,
-  }
-  
+exports.publish = publish;
