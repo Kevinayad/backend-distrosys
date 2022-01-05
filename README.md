@@ -5,6 +5,7 @@
 This component is responible for the following:
 
 * Generate the timeslots for the appointments
+* Publishes the schedule and generated timeslots to the frontend component 
 * Save dentist to the backend
 * Save appointments to the backend
 
