@@ -42,20 +42,12 @@ const remoteOptions = {
 }
 
 const remoteClient = mqtt.connect(remoteOptions.host, remoteOptions);
-// var dummy={
-//     "userid": 12345,
-//     "requestid": 13,
-//     "dentistid": 1,
-//     "issuance": 1602406766314,
-//     "date": "2022-01-03",
-//     "time": "12:30"
-//   }
-//   var dum=JSON.stringify(dummy);
+
 remoteClient.on('connect', function() {
     subscribe(validatorTopic);
     subscribe(frontendTopic);
     publish(frontendTopic, '1');
-    // publish(validatorTopic,dum);
+    //publish(validatorTopic,dum);      publishing the appointment, it is tested with dummy data for now
 });
 
 remoteClient.on('message', function(topic, message) {
