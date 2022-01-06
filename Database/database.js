@@ -144,15 +144,12 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
         var minutes = time.slice(3,5);
         date.setHours(hours,minutes,0);
         date.setTime(date.getTime() + (1*60*60*1000));
-        var check = false;
         var clinicName = 'Clinic' + (clinicID);
         var result = await scheduleCollection.findOne({});
         var clinic = result[clinicName];
         const allDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
         var daySchedule = clinic[allDays[day]];
         var slot = daySchedule[time];
-        var slotTime = slot.time;
-        if (date.getTime() == slotTime.getTime() && slot.av == true) {
             slot.av = false;
             await scheduleCollection.deleteOne({}, function (err, res) {
                 if (err) {throw err};
@@ -162,13 +159,8 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
                 if (err) {throw err};
                 console.log('Second schedule added');
             });
-            check = true;
-        }
-        if (check) {
-            return 1;
-        } else {
-            return -1;
-        }
+        
+
     }
 
     exports.timeSlots = timeSlots;
