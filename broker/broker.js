@@ -47,12 +47,24 @@ remoteClient.on('connect', function() {
     subscribe(validatorTopic);
     subscribe(frontendTopic);
     publish(frontendTopic, '1');
+    //publish(validatorTopic,dum);      publishing the appointment, it is tested with dummy data for now
 });
 
 remoteClient.on('message', function(topic, message) {
+
     if (topic == frontendTopic) {
         database.timeSlots(backendTopic);
+
+    }
+    if (topic == validatorTopic){
+        if(message=="false"){
+            publish(frontendTopic,"Appointment not available");
+        }else{
+            appointments.persistAppointment(message);
+        }
+        
     }
 })
 
 exports.publish = publish;
+exports.frontendTopic= frontendTopic;
