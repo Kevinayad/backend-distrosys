@@ -54,13 +54,13 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
 
     function scheduleFrontend(result) {
         var obj = {};
-        const allDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
         for (let i = 0; i < 4; i++) {
             var name = 'Clinic' + (i+1);
-            var weekSchedule = [];
-            var clinic = result[name];
-            for (let j = 1; j < 6; j++) {
-                var day = clinic[allDays[j]];
+            var clinicSchedule = [];
+            for ( let e = 0; e < 4; e++){
+            var clinic = result[name][e]['slots'];
+            for (let j = 0; j < 5; j++) {
+                var day = clinic[j];
                 const keys = Object.keys(day);
                 var slotArray = [];
                 keys.forEach( (key, index) => {
@@ -70,9 +70,10 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
                 var firstDate = slotArray[0].date;
                 var fDate = new Date(firstDate);
                 fDate.setHours(1,0,0);
-                weekSchedule.push({ date: fDate, slots: slotArray });
+                clinicSchedule.push({ date: fDate, slots: slotArray });
             }
-            obj[name] = weekSchedule;
+            }
+            obj[name] = clinicSchedule;
         }
         var stringObj = JSON.stringify(obj);
         return stringObj;
@@ -83,7 +84,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
             if (err) {
                 throw err;
             }
-            console.log('Schedule for the week inserted');
+            console.log('Schedule for four weeks inserted');
         })
     }
 
@@ -100,19 +101,24 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
     }
 
     function changeTimeSlots(slots) {
-        var completeSlots = {};
+        var completeSlots = [];
         const currentDate = new Date();
         var currentDay = currentDate.getDay();
         var dayCounter = 0;
-        const allDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-        for (let i = 0; i <slots.length; i++) {
+        for (let j = 0; j < 4; j++){
+            var weekSlots = [];
+        for (let i = 0; i < slots.length; i++) {
             var location = (i + currentDay) % slots.length;
             if (location != 0 && location != 6) {
-                var dayName = allDays[location];
-                completeSlots[dayName] = dailySlots(slots[location], dayCounter)
+                var daySlots = dailySlots(slots[location], dayCounter)
+                weekSlots.push(daySlots);
             }
             dayCounter++;
         }
+        var weekNumber = (j+1);
+        var week = { slots: weekSlots, week: weekNumber};
+        completeSlots.push(week);
+    }
         return completeSlots;
     }
 
@@ -166,3 +172,5 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
     exports.timeSlots = timeSlots;
     exports.checkAppointment = checkAppointment;
     exports.conn = conn;
+
+
