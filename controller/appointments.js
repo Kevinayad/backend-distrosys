@@ -10,6 +10,7 @@ async function persistAppointment(appointmentMessage){
         conn.collection("appointments").insertOne(appointment, function (err, res) {
         if (err) throw err;
         console.log("1 document inserted");
+        broker.publish(broker.backendTopic, "bookSuccess");
     });
   
 }
