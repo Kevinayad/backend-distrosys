@@ -46,22 +46,25 @@ const remoteClient = mqtt.connect(remoteOptions.host, remoteOptions);
 remoteClient.on('connect', function() {
     subscribe(validatorTopic);
     subscribe(frontendTopic);
-    //publish is only for testing
-    //publish(frontendTopic, 'Generate/GetSchedule')
+    publish(frontendTopic, '1');
+    //publish(validatorTopic,dum);      publishing the appointment, it is tested with dummy data for now
 });
 
 remoteClient.on('message', function(topic, message) {
-    if (topic == frontendTopic) {
-        if (message == 'Generate') {
-            database.timeSlots(1);
-        }
-        if (message == 'GetSchedule') {
-            database.timeSlots(backendTopic);
-        }
-    }
-    if (topic == validatorTopic) {
 
+    if (topic == frontendTopic) {
+        database.timeSlots(backendTopic);
+
+    }
+    if (topic == validatorTopic){
+        if(message=="false"){
+            publish(frontendTopic,"Appointment not available");
+        }else{
+            appointments.persistAppointment(message);
+        }
+        
     }
 })
 
 exports.publish = publish;
+exports.frontendTopic= frontendTopic;
