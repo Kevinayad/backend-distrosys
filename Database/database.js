@@ -65,7 +65,11 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
                 var slotArray = [];
                 keys.forEach( (key, index) => {
                     var slot = day[key];
-                    slotArray.push({ date: slot.time });
+                    if (slot.av == false) {
+                        
+                    } else {
+                        slotArray.push({ date: slot.time });
+                    }
                 });
                 var firstDate = slotArray[0].date;
                 var fDate = new Date(firstDate);
