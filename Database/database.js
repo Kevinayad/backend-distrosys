@@ -68,7 +68,10 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
                     if (slot.av == false) {
                         
                     } else {
-                        slotArray.push({ date: slot.time });
+                        var slotTime = slot.time;
+                        var slotDate = new Date(slotTime);
+                        slotDate.setHours(slotDate.getHours() - 1);
+                        slotArray.push({ date: slotDate });
                     }
                 });
                 var firstDate = slotArray[0].date;
