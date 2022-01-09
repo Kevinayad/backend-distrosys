@@ -35,7 +35,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
             console.log("Number of registered dentists: " + count);
         }
     });
-    });
+});
 
     async function timeSlots(topic) {
             if (topic == 1) {
@@ -65,7 +65,14 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
                 var slotArray = [];
                 keys.forEach( (key, index) => {
                     var slot = day[key];
-                    slotArray.push({ date: slot.time });
+                    if (slot.av == false) {
+                        
+                    } else {
+                        var slotTime = slot.time;
+                        var slotDate = new Date(slotTime);
+                        slotDate.setHours(slotDate.getHours() - 1);
+                        slotArray.push({ date: slotDate });
+                    }
                 });
                 var firstDate = slotArray[0].date;
                 var fDate = new Date(firstDate);
