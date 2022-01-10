@@ -146,10 +146,9 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
         var clinicID = appointment.dentistid;
         var date = new Date(appointment.date);
         var day = date.getDay();
-        var time = appointment.time;
-        var hours = time.slice(0,2);
-        var minutes = time.slice(3,5);
-        date.setHours(hours,minutes,0);
+        var hours = addZero(date.getHours());
+        var minutes = addZero(date.getMinutes());
+        var time = hours+":"+minutes;
         date.setTime(date.getTime() + (1*60*60*1000));
         var clinicName = 'Clinic' + (clinicID);
         var result = await scheduleCollection.findOne({});
@@ -169,7 +168,10 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, 
         
 
     }
-
+    function addZero(i) {
+        if (i < 10) {i = "0" + i}
+        return i;
+      }
     exports.timeSlots = timeSlots;
     exports.checkAppointment = checkAppointment;
     exports.conn = conn;
