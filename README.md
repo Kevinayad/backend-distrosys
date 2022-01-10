@@ -38,6 +38,10 @@ chmod u+x depend.sh
 
 1. npm run dev
 
+## Component Diagram
+
+![Component Diagram](./Component_Diagram.drawio.png)
+
 ## Development Team
 
 * Gianmarco Iachella
